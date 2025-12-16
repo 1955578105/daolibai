@@ -1,0 +1,3 @@
+/home/Daoli/build/CMakeFiles/basic.dir
+/home/Daoli/build/CMakeFiles/edit_cache.dir
+/home/Daoli/build/CMakeFiles/rebuild_cache.dir

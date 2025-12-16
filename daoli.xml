@@ -1,0 +1,72 @@
+<mujoco model="cart_pole">
+  <!-- 编译选项：角度使用弧度制 -->
+  <compiler angle="radian" coordinate="local" meshdir="."/>
+  
+  <!-- 物理选项：重力向下 (沿Z轴负方向) -->
+  <option gravity="0 0 -9.81" timestep="0.001" integrator="implicitfast"/>
+
+
+<asset>
+<!--  skybox 直接控制天空  -->
+<texture type="skybox" builtin="gradient" rgb1="1 1 1" rgb2="0.6 0.8 1" width="256" height="256"/>
+<texture name="plane" type="2d" builtin="checker" rgb1=".1 .1 .1" rgb2=".9 .9 .9" width="512" height="512" mark="cross" markrgb=".8 .8 .8"/>
+<material name="plane" reflectance="0.3" texture="plane" texrepeat="1 1" texuniform="true"/>
+</asset>
+
+  <!-- 默认属性设置 -->
+  <default>
+    <!-- 设置关节阻尼，模拟摩擦 -->
+    <joint damping="0.001"/>
+    <!-- 默认几何体属性 -->
+    <geom rgba="0.7 0.7 0.7 1"/>
+  </default>
+
+  <!-- 视觉资源 -->
+  <visual>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.8 0.8 0.8" specular="0.1 0.1 0.1"/>
+    <map znear="0.02"/>
+  </visual>
+
+  <worldbody>
+    <!-- 地面 -->
+    <light pos="0 0 3" dir="0 0 -1" directional="true"/>
+    <geom name="floor" pos="0 0 0" size="0 0 .25" type="plane" material="plane" condim="3" friction="0.01 0.01 0.01"/>
+    
+    <!-- 导轨视觉辅助线 (可选，为了看清X轴运动轨迹) -->
+    <site name="rail" type="capsule" fromto="-50 0 0 50 0 0" size="0.02" rgba="1 0.4 0.7 0.7"/>
+
+    <!-- 小车 (Cart) - 对应质量 M -->
+    <!-- pos="0 0 0.1" 是为了让小车刚好浮在地面上方 -->
+    <body name="cart" pos="0 0 0.05">
+      <!-- 移动关节：沿X轴滑动，代替轮子 -->
+      <joint name="slider" type="slide" axis="1 0 0" limited="true" range="-50 50"/>
+      
+      <!-- 小车实体：长方体 长0.4 0.2  高0.1-->   
+      <geom name="cart_geom" type="box" size="0.2 0.1 0.05" rgba="0.6 0.6 0.6 1" mass="0.5"/>
+
+      <!-- 倒立摆系统 (Pole) -->
+      <!-- 安装在小车顶部中心 (0, 0, 0.05) -->
+      <body name="pole" pos="0 0 0.05">
+        <!-- 旋转关节：绕Y轴旋转 (在XZ平面内摆动) -->
+        <joint name="hinge" type="hinge" axis="0 1 0" damping="0.001" range="-3.14 3.14"/>
+        <!-- 连杆 (Rod) - 长度 l -->
+        <!-- 使用 fromto 定义起点(关节处)到终点(球心) -->
+        <!-- 质量设得很小，符合"连杆质量尽量小"的要求 -->
+        <geom name="rod_geom" type="capsule" fromto="0 0 0 0 0 0.3" size="0.01" rgba="0.5 0.5 0.5 1" mass="0.01"/>
+        <!-- 质点球 (Mass m) -->
+        <!-- 位置在连杆末端 -->
+        <body name="mass_sphere" pos="0 0 0.3">
+            <geom name="m_geom" type="sphere" size="0.03" rgba="0 0 0 1" mass="0.5"/>
+        </body>
+      </body>
+    </body>
+  </worldbody>
+
+  <!-- 执行器 (Actuator) -->
+  <actuator>
+    <!-- 施加在滑块上的力 F -->
+    <!-- ctrlrange限制输入的力的大小 -->
+    <motor name="slide_motor" joint="slider" ctrlrange="-5000 5000"/>
+  </actuator>
+
+</mujoco>

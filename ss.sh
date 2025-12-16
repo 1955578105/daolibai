@@ -1,0 +1,1 @@
+cd /home/mujoco/mujoco-3.3.0-linux-x86_64/mujoco-3.3.0/bin && ./simulate /home/Daoli/daoli.xml

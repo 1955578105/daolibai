@@ -10,10 +10,10 @@ namespace Controller
 {
 
   // 系统参数  公共变量
-  const double g = 9.81; // 重力加速度
-  const double M = 0.5;  // 小车质量
-  const double m = 0.5;  // 小球质量
-  const double l = 0.3;  // 连杆长度
+  const double g = -9.81; // 重力加速度
+  const double M = 0.5;   // 小车质量
+  const double m = 0.5;   // 小球质量
+  const double l = 0.3;   // 连杆长度
   // const double M = 1.0;  // 小车质量
   // const double m = 0.5;  // 小球质量
   // const double l = 0.5;  // 连杆长度
@@ -29,11 +29,18 @@ namespace Controller
   void Initialize_System();
   void UpdateX(mjModel *m, mjData *d);
   void APPLY_FORCE(mjModel *m, mjData *d);
+  extern Matrix4f Ad; // 离散系统矩阵
+  extern Vector4f Bd;
+  extern float Ts; // 控制周期
+  extern MatrixXf Kd;
   namespace LQR
   {
 
     // LQR函数声明
     void LQR_Controller_Init();
+    void LQR_D_Controller_Init();
+    void LQR_D_Controller_Update();
+
   }; // namespace LQR
 
 };

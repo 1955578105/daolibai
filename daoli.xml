@@ -37,16 +37,17 @@
 
     <!-- 小车 (Cart) - 对应质量 M -->
     <!-- pos="0 0 0.1" 是为了让小车刚好浮在地面上方 -->
-    <body name="cart" pos="0 0 0.05">
+    <body name="cart" pos="0 0 0.2">
       <!-- 移动关节：沿X轴滑动，代替轮子 -->
       <joint name="slider" type="slide" axis="1 0 0" limited="true" range="-50 50"/>
       
       <!-- 小车实体：长方体 长0.4 0.2  高0.1-->   
-      <geom name="cart_geom" type="box" size="0.2 0.1 0.05" rgba="0.6 0.6 0.6 1" mass="0.5"/>
-
+      <geom name="cart_geom" type="box" size="0.2 0.1 0.2" rgba="0.6 0.6 0.6 1" mass="0.5"/>
+      <body name ="fixed" pos="0 0 0.2">
+       <geom name="fixcap" type="capsule" fromto="0 0 0 0 0.3 0" size="0.01" rgba="0.5 0.5 0.5 1" mass="0.01"/>
       <!-- 倒立摆系统 (Pole) -->
       <!-- 安装在小车顶部中心 (0, 0, 0.05) -->
-      <body name="pole" pos="0 0 0.05">
+      <body name="pole" pos="0 0.3 0">
         <!-- 旋转关节：绕Y轴旋转 (在XZ平面内摆动) -->
         <joint name="hinge" type="hinge" axis="0 1 0" damping="0.001" range="-3.14 3.14"/>
         <!-- 连杆 (Rod) - 长度 l -->
@@ -57,6 +58,7 @@
         <!-- 位置在连杆末端 -->
         <body name="mass_sphere" pos="0 0 0.3">
             <geom name="m_geom" type="sphere" size="0.03" rgba="0 0 0 1" mass="0.5"/>
+        </body>
         </body>
       </body>
     </body>

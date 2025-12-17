@@ -477,7 +477,9 @@ namespace
                 // std::cout << vel[3] << std::endl;
                 Controller::UpdateX(m, d);     // 更新状态
                 Controller::APPLY_FORCE(m, d); // 应用控制力
-                std::cout << Controller::X << std::endl;
+                // std::cout << Controller::X << std::endl;
+                Controller::LQR::LQR_D_Controller_Update();
+                std::cout << Controller::Kd << std::endl;
                 std::cout << "===============" << std::endl;
 
                 const char *message = Diverged(m->opt.disableflags, d);
@@ -535,7 +537,7 @@ void PhysicsThread(mj::Simulate *sim, const char *filename)
       const std::unique_lock<std::recursive_mutex> lock(sim->mtx);
 
       d = mj_makeData(m);
-      d->qpos[m->jnt_qposadr[1]] = 1.5; // 初始杆偏离角度1度
+      d->qpos[m->jnt_qposadr[1]] = 1.2; // 初始杆偏离角度1度
     }
     if (d)
     {
@@ -607,7 +609,9 @@ int main(int argc, char **argv)
   auto sim = std::make_unique<mj::Simulate>(
       std::make_unique<mj::GlfwAdapter>(),
       &cam, &opt, &pert, /* is_passive = */ false);
-  Controller::LQR::LQR_Controller_Init(); // 初始化控制参数
+  Controller::Initialize_System();
+  Controller::LQR::LQR_D_Controller_Init(); // 初始化控制参数
+
   const char *filename = nullptr;
   filename = "../daoli.xml";
   // if (argc >  1) {

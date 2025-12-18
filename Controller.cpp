@@ -5,20 +5,34 @@
 namespace Controller
 {
 
+  // 连续lqr
   MatrixXf K(1, 4); // 优化增益矩阵
   float x, dx, q, dq;
   Vector4f X = {x, q, dx, dq};
   Matrix4f A;
   Matrix<float, 4, 1> B;
   float F = 0;
-  Matrix4f Q;  // 运行状态权重矩阵
-  float R;     // 输入权重
-  Matrix4f S;  // 末端代价权重矩阵
-  Matrix4f P;  // 离散LQR求解迭代
+  Matrix4f Q; // 运行状态权重矩阵
+  float R;    // 输入权重
+  Matrix4f S; // 末端代价权重矩阵
+  Matrix4f P; // 离散LQR求解迭代
+
+  // 离散lqr
   Matrix4f Ad; // 离散系统矩阵
   Vector4f Bd;
   float Ts = 0.001;  // 控制周期
   MatrixXf Kd(1, 4); // 离散LQR反馈增益矩阵
+
+  // 非零参考值
+  MatrixXf Aa(8, 8);
+  MatrixXf Xa(8, 1);
+  VectorXf Ba(8);
+  MatrixXf Ca(4, 8);
+  MatrixXf X_desire(4, 1);
+  MatrixXf Qa(8, 8);
+  MatrixXf Pa(8, 8);
+  MatrixXf Ka(1, 8); // 离散LQR反馈增益矩阵
+
   void Initialize_System()
   {
     A << 0, 0, 1, 0,
@@ -53,6 +67,14 @@ namespace Controller
     F = ((K * (X - X_desired))[0]);
     d->ctrl[0] = F;
   }
+
+  void APPLY_FORCE2(mjModel *m, mjData *d)
+  {
+    Vector4f X_desired;
+    X_desired << 0, 0.3, 0, 0;
+    F = ((K * (X - X_desired))[0]);
+    d->ctrl[0] = F;
+  }
   namespace LQR
   {
 
@@ -72,12 +94,38 @@ namespace Controller
       K << 9.94253, 3.22607, 5.24073, 0.153588;
     }
 
-        void LQR_D_Controller_Update()
+    // 用于参数计算
+    void LQR_D_Controller_Update()
     {
       Kd = (1 / (Bd.transpose() * P * Bd + R)) * (Bd.transpose() * P * Ad);
       P = ((Ad - Bd * Kd).transpose()) * P * (Ad - Bd * Kd) + Q + Kd.transpose() * R * Kd;
       // 经过迭代发现
       //    Kd 收敛于  9.94253  3.22607  5.24073 0.153588  //接近  连续时间  LQR
     }
-  }; // namespace LQR
-};
+
+    void LQR_D_NOZERO_()
+    {
+      Aa << Ad, (Matrix4f::Identity() - Ad),
+          Matrix4f::Zero(), Matrix4f::Identity();
+
+      Ba << Bd, 0, 0, 0, 0;
+      Ca << Matrix4f::Identity(), -Matrix4f::Identity();
+      Qa << Ca.transpose() * Q * Ca;
+      Pa = Qa;
+
+      X_Desire << 0, 10, 0, 0;
+    }
+
+    void LQR_D_NOZERO_Update()
+    {
+      Ka = (1 / (Ba.transpose() * Pa * Ba + R)) * (Ba.transpose() * Pa * Aa);
+      Pa = ((Aa - Ba * Ka).transpose()) * Pa * (Aa - Ba * Ka) + Qa + Ka.transpose() * R * Ka;
+      // 经过迭代发现
+      //    Kd 收敛于   9.94246   3.22615    5.2407  0.153593   -9.9426  -3.22619   -5.2406 -0.153615
+    }; // namespace LQR
+
+    namespace MPC
+    {
+
+    };
+  };

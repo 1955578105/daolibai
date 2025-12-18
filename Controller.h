@@ -33,6 +33,7 @@ namespace Controller
   extern Vector4f Bd;
   extern float Ts; // 控制周期
   extern MatrixXf Kd;
+  extern MatrixXf Ka; // 离散LQR反馈增益矩阵
   namespace LQR
   {
 
@@ -40,8 +41,25 @@ namespace Controller
     void LQR_Controller_Init();
     void LQR_D_Controller_Init();
     void LQR_D_Controller_Update();
+    void LQR_D_NOZERO_();
+    void LQR_D_NOZERO_Update();
 
   }; // namespace LQR
+
+  namespace MPC
+  {
+
+  };
+
+  namespace iLQR
+  {
+
+  };
+
+  namespace NMPC
+  {
+
+  };
 
 };
 

@@ -478,8 +478,8 @@ namespace
                 Controller::UpdateX(m, d);     // 更新状态
                 Controller::APPLY_FORCE(m, d); // 应用控制力
                 // std::cout << Controller::X << std::endl;
-                Controller::LQR::LQR_D_Controller_Update();
-                std::cout << Controller::Kd << std::endl;
+                Controller::LQR::LQR_D_NOZERO_Update();
+                std::cout << Controller::Ka << std::endl;
                 std::cout << "===============" << std::endl;
 
                 const char *message = Diverged(m->opt.disableflags, d);
@@ -611,7 +611,7 @@ int main(int argc, char **argv)
       &cam, &opt, &pert, /* is_passive = */ false);
   Controller::Initialize_System();
   Controller::LQR::LQR_D_Controller_Init(); // 初始化控制参数
-
+  Controller::LQR::LQR_D_NOZERO_();
   const char *filename = nullptr;
   filename = "../daoli.xml";
   // if (argc >  1) {

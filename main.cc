@@ -475,11 +475,16 @@ namespace
                 // mjtNum vel[6];
                 // mj_objectVelocity(m, d, mjOBJ_BODY, 1, vel, 0);
                 // std::cout << vel[3] << std::endl;
-                Controller::UpdateX(m, d);     // 更新状态
-                Controller::APPLY_FORCE(m, d); // 应用控制力
-                // std::cout << Controller::X << std::endl;
-                Controller::LQR::LQR_D_NOZERO_Update();
-                std::cout << Controller::Ka << std::endl;
+                Controller::UpdateX(m, d);      // 更新状态
+                Controller::APPLY_FORCE2(m, d); // 应用控制力
+                std::cout << Controller::X << std::endl;
+                // std::cout << Controller::F << std::endl;
+                std::cout << Controller::aa << std::endl;
+
+                // Controller::LQR::LQR_D_NOZERO_Update();
+                // std::cout << Controller::aa << std::endl;
+                // std::cout << Controller::fd << std::endl;
+
                 std::cout << "===============" << std::endl;
 
                 const char *message = Diverged(m->opt.disableflags, d);
@@ -610,6 +615,7 @@ int main(int argc, char **argv)
       std::make_unique<mj::GlfwAdapter>(),
       &cam, &opt, &pert, /* is_passive = */ false);
   Controller::Initialize_System();
+
   Controller::LQR::LQR_D_Controller_Init(); // 初始化控制参数
   Controller::LQR::LQR_D_NOZERO_();
   const char *filename = nullptr;

@@ -33,7 +33,7 @@
     <geom name="floor" pos="0 0 0" size="0 0 .25" type="plane" material="plane" condim="3" friction="0.01 0.01 0.01"/>
     
     <!-- 导轨视觉辅助线 (可选，为了看清X轴运动轨迹) -->
-    <site name="rail" type="capsule" fromto="-50 0 0 50 0 0" size="0.02" rgba="1 0.4 0.7 0.7"/>
+    <site name="rail" type="capsule" fromto="-500 0 0 500 0 0" size="0.02" rgba="1 0.4 0.7 0.7"/>
 
     <!-- 小车 (Cart) - 对应质量 M -->
     <!-- pos="0 0 0.1" 是为了让小车刚好浮在地面上方 -->
@@ -49,7 +49,7 @@
       <!-- 安装在小车顶部中心 (0, 0, 0.05) -->
       <body name="pole" pos="0 0.3 0">
         <!-- 旋转关节：绕Y轴旋转 (在XZ平面内摆动) -->
-        <joint name="hinge" type="hinge" axis="0 1 0" damping="0.001" range="-3.14 3.14"/>
+        <joint name="hinge"  type="hinge" axis="0 1 0" damping="0.001" range="-3.14 3.14"/>
         <!-- 连杆 (Rod) - 长度 l -->
         <!-- 使用 fromto 定义起点(关节处)到终点(球心) -->
         <!-- 质量设得很小，符合"连杆质量尽量小"的要求 -->
@@ -65,7 +65,7 @@
   </worldbody>
 
   <!-- 执行器 (Actuator) -->
-  <actuator>
+  <actuator> 
     <!-- 施加在滑块上的力 F -->
     <!-- ctrlrange限制输入的力的大小 -->
     <motor name="slide_motor" joint="slider" ctrlrange="-5000 5000"/>

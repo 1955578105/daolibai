@@ -28,10 +28,12 @@ namespace Controller
   MatrixXf Xa(8, 1);
   VectorXf Ba(8);
   MatrixXf Ca(4, 8);
-  MatrixXf X_desire(4, 1);
+  Vector4f X_desire;
   MatrixXf Qa(8, 8);
   MatrixXf Pa(8, 8);
   MatrixXf Ka(1, 8); // 离散LQR反馈增益矩阵
+  float fd;
+  float aa;
 
   void Initialize_System()
   {
@@ -59,20 +61,21 @@ namespace Controller
     dx = vel[3]; // 物体在X轴方向的速度
     x = d->xpos[3];
     X << x, q, dx, dq;
+    Xa << x, q, dx, dq, X_desire;
   }
   void APPLY_FORCE(mjModel *m, mjData *d)
   {
     Vector4f X_desired;
     X_desired << 0, 0, 0, 0;
-    F = ((K * (X - X_desired))[0]);
+    F = ((K * (X))[0]);
     d->ctrl[0] = F;
   }
 
   void APPLY_FORCE2(mjModel *m, mjData *d)
   {
-    Vector4f X_desired;
-    X_desired << 0, 0.3, 0, 0;
-    F = ((K * (X - X_desired))[0]);
+
+    F = ((Ka * Xa)(0, 0)) + 17.81;
+    aa = ((Ka * Xa)(0, 0));
     d->ctrl[0] = F;
   }
   namespace LQR
@@ -84,6 +87,7 @@ namespace Controller
       // 连续 lqr  解算出来的  里卡提方程
       // 连续方程
       K << 10., 3.223817, 5.25095341, 0.14434914;
+      // K << -10., 37.053888, -7.5195143, 5.61831863;
     }
 
     // Discrete formula solution
@@ -113,7 +117,9 @@ namespace Controller
       Qa << Ca.transpose() * Q * Ca;
       Pa = Qa;
 
-      X_Desire << 0, 10, 0, 0;
+      X_desire << 101.1, 10, 101.1, 0;
+      fd = 2 * X_desire[1]; // 稳定状态时的输入
+      Ka << 0, 88.935, 0, 5.22467, 0, -88.935, 0, -5.22467;
     }
 
     void LQR_D_NOZERO_Update()
@@ -121,7 +127,7 @@ namespace Controller
       Ka = (1 / (Ba.transpose() * Pa * Ba + R)) * (Ba.transpose() * Pa * Aa);
       Pa = ((Aa - Ba * Ka).transpose()) * Pa * (Aa - Ba * Ka) + Qa + Ka.transpose() * R * Ka;
       // 经过迭代发现
-      //    Kd 收敛于   9.94246   3.22615    5.2407  0.153593   -9.9426  -3.22619   -5.2406 -0.153615
+      //    Ka 收敛于   9.94246   3.22615    5.2407  0.153593   -9.9426  -3.22619   -5.2406 -0.153615
     }; // namespace LQR
 
     namespace MPC
@@ -129,3 +135,5 @@ namespace Controller
 
     };
   };
+
+}

@@ -4,3 +4,6 @@ WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Ti
 Mon Dec 15 16:48:48 2025
 WARNING: Nan, Inf or huge value in QPOS at DOF 0. The simulation is unstable. Time = 0.4700.
 
+Fri Dec 19 11:08:46 2025
+WARNING: Nan, Inf or huge value in CTRL at ACTUATOR 0. The simulation is unstable. Time = 0.0030.
+

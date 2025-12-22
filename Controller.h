@@ -29,11 +29,16 @@ namespace Controller
   void Initialize_System();
   void UpdateX(mjModel *m, mjData *d);
   void APPLY_FORCE(mjModel *m, mjData *d);
+  void APPLY_FORCE2(mjModel *m, mjData *d);
   extern Matrix4f Ad; // 离散系统矩阵
   extern Vector4f Bd;
   extern float Ts; // 控制周期
   extern MatrixXf Kd;
   extern MatrixXf Ka; // 离散LQR反馈增益矩阵
+  extern Vector4f X_desire;
+  extern MatrixXf Xa;
+  extern float aa;
+  extern float fd;
   namespace LQR
   {
 
